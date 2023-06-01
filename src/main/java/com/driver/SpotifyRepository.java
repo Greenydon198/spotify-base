@@ -125,7 +125,7 @@ public class SpotifyRepository {
 
         Album foundalbum = foundalbum(albumName);
         if(foundalbum==null)
-            throw new Exception("Album not found");
+            throw new Exception("Album does not exist");
 
         Song song = new Song(title,length);
         song.setLikes(0);
