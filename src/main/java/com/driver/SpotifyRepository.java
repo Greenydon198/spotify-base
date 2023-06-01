@@ -101,6 +101,7 @@ public class SpotifyRepository {
     public Artist createArtist(String name) {
         Artist artist = new Artist(name);
         artists.add(artist);
+        artist.setLikes(0);
         return artist;
 
     }
@@ -113,6 +114,7 @@ public class SpotifyRepository {
             foundArtist = createArtist(artistName);
 
         Album album = new Album(title);
+        albums.add(album);
         List<Album> curr = artistAlbumMap.getOrDefault(foundArtist,new ArrayList<>());
         curr.add(album);
         artistAlbumMap.put(foundArtist,curr);
@@ -126,6 +128,7 @@ public class SpotifyRepository {
             throw new Exception("Album not found");
 
         Song song = new Song(title,length);
+        song.setLikes(0);
         songs.add(song);
         List<Song> curr = albumSongMap.getOrDefault(foundalbum,new ArrayList<>());
         curr.add(song);
@@ -134,18 +137,20 @@ public class SpotifyRepository {
     }
 
     public Playlist createPlaylistOnLength(String mobile, String title, int length) throws Exception {
+
+        User founduser = founduser(mobile);
+        if(founduser == null)
+            throw new Exception("User does not exist");
+
         Playlist playlist = new Playlist(title);
+        playlists.add(playlist);
+
         List<Song> songlist = new ArrayList<>();
         for(Song song:songs){
             if(song.getLength()==length)
                 songlist.add(song);
         }
         playlistSongMap.put(playlist,songlist);
-
-        User founduser = founduser(mobile);
-
-        if(founduser == null)
-            throw new Exception("User does not exist");
 
         //add to listenermap
         List<User> curr = new ArrayList<>();
@@ -164,18 +169,19 @@ public class SpotifyRepository {
     }
 
     public Playlist createPlaylistOnName(String mobile, String title, List<String> songTitles) throws Exception {
+
+        User founduser = founduser(mobile);
+        if(founduser == null)
+            throw new Exception("User does not exist");
+
         Playlist playlist = new Playlist(title);
+        playlists.add(playlist);
         List<Song> songlist = new ArrayList<>();
         for(Song song:songs){
             if(songTitles.contains(song))
                 songlist.add(song);
         }
         playlistSongMap.put(playlist,songlist);
-
-        User founduser = founduser(mobile);
-
-        if(founduser == null)
-            throw new Exception("User does not exist");
 
         //add to listenermap
         List<User> curr = new ArrayList<>();
@@ -275,7 +281,7 @@ public class SpotifyRepository {
         String mostpop = "";
         int max = 0;
         for(Artist artist:artists){
-            if(artist.getLikes()>max){
+            if(artist.getLikes()>=max){
                 max = artist.getLikes();
                 mostpop = artist.getName();
             }
@@ -287,7 +293,7 @@ public class SpotifyRepository {
         String mostpop = "";
         int max = 0;
         for(Song song:songs){
-            if(song.getLikes()>max){
+            if(song.getLikes()>=max){
                 max = song.getLikes();
                 mostpop = song.getTitle();
             }
